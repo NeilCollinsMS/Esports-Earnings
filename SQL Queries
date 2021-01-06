@@ -17,11 +17,13 @@ SELECT column_name, DATA_TYPE FROM information_schema.columns WHERE table_schema
 # First, we're going to start by looking at the games in each genre, total earnings in each genre, the number of players, and the number of tournaments
 # However, a game with less than 15 or so tournaments probably does not have enough base to meaningfully add to player earnings, though they would still
 # contribute a significant amount to the player count. As such, games with less than 15 tournaments are removed from the genre count.
+# Furthermore, to filter a bit farther, we would like to look at games with an average of $1000 in earnings per tournament, so we will filter this down 
+# to where Total Earnings > $15000 (>= 15 tournaments, $1000/tournament)
 
 SELECT Genre, COUNT(Genre) AS 'Games in Genre', ROUND(SUM(TotalEarnings),0) AS 'Total Genre Earnings', ROUND(SUM(OnlineEarnings),0) 'Total Genre Earnings - Online',
 	   SUM(TotalPlayers) AS 'Total Players' , SUM(TotalTournaments) AS 'Total Tournaments'
 FROM totalearnings
-WHERE TotalTournaments >= 15
+WHERE TotalTournaments >= 15 AND TotalEarnings >= 15000
 GROUP BY Genre
 ORDER BY SUM(TotalEarnings) DESC;
 
