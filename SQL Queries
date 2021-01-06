@@ -1,0 +1,5 @@
+# Esports Earnings Analysis
+
+CREATE SCHEMA IF NOT EXISTS esports;
+
+# Importing data utilizing MySQL built in Table Import Wizard
