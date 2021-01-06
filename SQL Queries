@@ -3,3 +3,27 @@
 CREATE SCHEMA IF NOT EXISTS esports;
 
 # Importing data utilizing MySQL built in Table Import Wizard
+
+USE esports;
+
+# Data exploration
+
+SELECT * FROM earningsbymonth;
+SELECT * FROM totalearnings;
+
+SELECT column_name, DATA_TYPE FROM information_schema.columns WHERE table_schema = 'esports' AND table_name = 'earningsbymonth';
+SELECT column_name, DATA_TYPE FROM information_schema.columns WHERE table_schema = 'esports' AND table_name = 'totalearnings';
+
+# First, we're going to start by looking at the games in each genre, total earnings in each genre, the number of players, and the number of tournaments
+# However, a game with less than 15 or so tournaments probably does not have enough base to meaningfully add to player earnings, though they would still
+# contribute a significant amount to the player count. As such, games with less than 15 tournaments are removed from the genre count.
+
+SELECT Genre, COUNT(Genre) AS 'Games in Genre', ROUND(SUM(TotalEarnings),0) AS 'Total Genre Earnings', ROUND(SUM(OnlineEarnings),0) 'Total Genre Earnings - Online',
+	   SUM(TotalPlayers) AS 'Total Players' , SUM(TotalTournaments) AS 'Total Tournaments'
+FROM totalearnings
+WHERE TotalTournaments >= 15
+GROUP BY Genre
+ORDER BY SUM(TotalEarnings) DESC;
+
+# As we can see here, Multiplayer Online Battle Arenas, First Person Shooters, and Battle Royales make up a significantly larger portion of total prize pools
+# than other genres. Let's continue by taking a closer look at MOBAs. 
