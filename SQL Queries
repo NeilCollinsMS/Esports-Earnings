@@ -18,7 +18,8 @@ SELECT column_name, DATA_TYPE FROM information_schema.columns WHERE table_schema
 # However, a game with less than 15 or so tournaments probably does not have enough base to meaningfully add to player earnings, though they would still
 # contribute a significant amount to the player count. As such, games with less than 15 tournaments are removed from the genre count.
 # Furthermore, to filter a bit farther, we would like to look at games with an average of $1000 in earnings per tournament, so we will filter this down 
-# to where Total Earnings > $15000 (>= 15 tournaments, $1000/tournament)
+# to where Total Earnings > $15000 (>= 15 tournaments, $1000/tournament). When we get to EarningsByMonth we will set individual tournament prizepool requirements,
+# but for now we will make due.
 
 SELECT Genre, COUNT(Genre) AS 'Games in Genre', ROUND(SUM(TotalEarnings),0) AS 'Total Genre Earnings', ROUND(SUM(OnlineEarnings),0) 'Total Genre Earnings - Online',
 	   SUM(TotalPlayers) AS 'Total Players' , SUM(TotalTournaments) AS 'Total Tournaments'
@@ -28,4 +29,57 @@ GROUP BY Genre
 ORDER BY SUM(TotalEarnings) DESC;
 
 # As we can see here, Multiplayer Online Battle Arenas, First Person Shooters, and Battle Royales make up a significantly larger portion of total prize pools
-# than other genres. Let's continue by taking a closer look at MOBAs. 
+# than other genres. Let's continue by taking a closer look at MOBAs. I will keep the 15 tournament/15,000 rule for consistency.
+
+SELECT *
+FROM totalearnings
+WHERE Genre = 'Multiplayer Online Battle Arena'
+AND TotalTournaments >= 15
+AND TotalEarnings >= 15000
+ORDER BY TotalEarnings DESC;
+
+# DotA 2 and League of Legends make up a vast majority of the earnings (partly because they have more tournaments than every other MOBA combined, and partly because 
+# they both utilize versions of the crowd funding model
+
+# I disagree with the classification of Minecraft as a MOBA so I am going to reassign it
+
+SELECT DISTINCT Genre 
+FROM TotalEarnings
+GROUP BY Genre;
+
+# Of these categories, Role-Playing Game is the closest though it's not a great match. Minecraft is just not a MOBA.
+
+SET SQL_SAFE_UPDATES = 0; # ONLY USE THIS COMMAND IF YOU COMPLETELY UNDERSTAND WHAT YOUR QUERY IS DOING.
+
+UPDATE TotalEarnings
+SET Genre = 'Role-Playing Game'
+WHERE Game = 'Minecraft';
+
+SELECT *
+FROM TotalEarnings
+WHERE Genre = 'Role-Playing Game';
+
+SELECT *
+FROM TotalEarnings
+WHERE Game = 'Minecraft';
+
+# Good to go.
+
+# Percentage Calculation for MOBAs. I might consider condensing this into a function for later, but this is heavily reusable as it stands with altered filters.
+
+SELECT Game, Genre, TotalEarnings, TotalPlayers, TotalTournaments,
+	ROUND(TotalEarnings * 100 / (SELECT SUM(TotalEarnings) AS TE 
+    FROM TotalEarnings 
+    WHERE Genre = 'Multiplayer Online Battle Arena'
+    AND TotalTournaments >= 15
+	AND TotalEarnings >= 15000),2) AS 'Percent of Total'
+FROM TotalEarnings
+WHERE Genre = 'Multiplayer Online Battle Arena'
+AND TotalTournaments >= 15
+AND TotalEarnings >= 15000
+GROUP BY Game
+ORDER BY TotalEarnings DESC;
+
+# From this, we can see that Dota 2 makes up 64.01% of MOBA earnings, League makes up 22.9%, Heroes of the Storm (HOTS) is 5.1%, and it goes from there.
+# Next, we can look at some other metrics such as earnings per player, earnings/tournament, etc...
+
