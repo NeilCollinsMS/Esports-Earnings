@@ -83,3 +83,62 @@ ORDER BY TotalEarnings DESC;
 # From this, we can see that Dota 2 makes up 64.01% of MOBA earnings, League makes up 22.9%, Heroes of the Storm (HOTS) is 5.1%, and it goes from there.
 # Next, we can look at some other metrics such as earnings per player, earnings/tournament, etc...
 
+# Total Earnings / Player - Segmented by Game - MOBAs
+
+SELECT Game, TotalEarnings, TotalPlayers, ROUND(SUM(TotalEarnings)/SUM(TotalPlayers),2) AS 'Earnings per Player'
+FROM TotalEarnings
+WHERE Genre = 'Multiplayer Online Battle Arena'
+AND TotalTournaments >= 15
+AND TotalEarnings >= 15000
+GROUP BY Game
+ORDER BY SUM(TotalEarnings)/SUM(TotalPlayers) DESC;
+
+# So, while League of Legends is 2nd in MOBA earnings, it is actually 5th in earnings per player. This could be due to more Division 2 or 3 tournaments being held.
+# This will be an interesting trend to look into later on with the earningsbymonth data set.
+
+# Total Earnings / Tournament - MOBAs
+
+SELECT Game, TotalEarnings, TotalTournaments, ROUND(SUM(TotalEarnings)/SUM(TotalTournaments),2) AS 'Earnings per Tournament'
+FROM TotalEarnings
+WHERE Genre = 'Multiplayer Online Battle Arena'
+AND TotalTournaments >= 15
+AND TotalEarnings >= 15000
+GROUP BY Game
+ORDER BY SUM(TotalEarnings)/SUM(TotalTournaments) DESC;
+
+# Arena of Valor has more Earnings per Tournament than Dota 2, which would seem to indicate that its fewer tournaments have lower prizepools than Dota 2
+# This makes sense, because a lot of Dota 2's earnings come from their 'The International' (World Championship) series that utilizes crowdfunding for the 
+# largest prizepools in esports history
+
+# Total Players / Tournament - MOBAs -- FLAWED METRIC -- "TotalPlayers" counts Unique Players
+
+# SELECT Game, TotalTournaments, TotalPlayers, ROUND(SUM(TotalPlayers)/SUM(TotalTournaments),0) AS 'Players per Tournament'
+# FROM TotalEarnings
+# WHERE Genre = 'Multiplayer Online Battle Arena'
+# AND TotalTournaments >= 15
+# AND TotalEarnings >= 15000
+# GROUP BY Game
+# ORDER BY SUM(TotalPlayers)/SUM(TotalTournaments) DESC;
+
+# Total Earnings / Player - Segmented by Genre
+
+SELECT Genre, SUM(TotalEarnings) AS 'Total Earnings', SUM(TotalPlayers) AS 'Total Players', ROUND(SUM(TotalEarnings)/SUM(TotalPlayers),2) AS 'Earnings per Player'
+FROM TotalEarnings
+WHERE TotalTournaments >= 15
+AND TotalEarnings >= 15000
+GROUP BY Genre
+ORDER BY SUM(TotalEarnings)/SUM(TotalPlayers) DESC;
+
+# MOBAs generate the ghihest earnings per player; likely because of the high earnings of the Dota 2 and League of Legends World Championships.
+
+# Total Earnings / Tournament - Segmented by Genre
+
+SELECT Genre, ROUND(SUM(TotalEarnings),0) as 'Total Earnings', SUM(TotalTournaments) AS 'Total Tournaments', ROUND(SUM(TotalEarnings)/SUM(TotalTournaments),2) AS 'Earnings per Tournament'
+FROM TotalEarnings
+WHERE TotalTournaments >= 15
+AND TotalEarnings >= 15000
+GROUP BY Genre
+ORDER BY SUM(TotalEarnings)/SUM(TotalTournaments) DESC;
+
+# Battle Royale games have the highest earnings per tournament; likely due to the relatively low amount of Fortnite tournaments with very high prize pools
+# However, this will be explored later as I will break down the more profitable genres by game (in addition to prior MOBA analysis).
