@@ -129,7 +129,7 @@ AND TotalEarnings >= 15000
 GROUP BY Genre
 ORDER BY SUM(TotalEarnings)/SUM(TotalPlayers) DESC;
 
-# MOBAs generate the ghihest earnings per player; likely because of the high earnings of the Dota 2 and League of Legends World Championships.
+# MOBAs generate the highest earnings per player; likely because of the high earnings of the Dota 2 and League of Legends World Championships.
 
 # Total Earnings / Tournament - Segmented by Genre
 
@@ -142,3 +142,76 @@ ORDER BY SUM(TotalEarnings)/SUM(TotalTournaments) DESC;
 
 # Battle Royale games have the highest earnings per tournament; likely due to the relatively low amount of Fortnite tournaments with very high prize pools
 # However, this will be explored later as I will break down the more profitable genres by game (in addition to prior MOBA analysis).
+
+# Since MOBAs, Third Person Shooters, and Battle Royales have the highest Earnings/Player I am going to quickly run through the analysis I did on MOBAs with 
+# TPS and BR games as well
+
+# Total Earnings / Player - Segmented by Game - Battle Royale
+
+SELECT Game, TotalEarnings, TotalPlayers, ROUND(SUM(TotalEarnings)/SUM(TotalPlayers),2) AS 'Earnings per Player'
+FROM TotalEarnings
+WHERE Genre = 'Battle Royale'
+AND TotalTournaments >= 15
+AND TotalEarnings >= 15000
+GROUP BY Game
+ORDER BY SUM(TotalEarnings)/SUM(TotalPlayers) DESC;
+
+# This comment generated after data set fixed: Fortnite and PubG are definitely the two highest for earnings/player, so I am glad that this was fixed.
+# However, my other insights may need to be examined to see if the reintroduction of games with apostrophies made any major difference.
+
+##############################
+# DATA CLEANING FIX START
+
+# This query is strange because PLAYERUNKNOWN'S BATTLEGROUNDS isn't appearing when I know full well it meets these criteria
+
+SELECT *
+FROM TotalEarnings
+WHERE Genre = 'Battle Royale';
+
+# It is still missing
+
+# SELECT *
+# FROM TotalEarnings;
+
+# Re-importing the data to see if there was anything that changed. It appears that the apostrophe in the name stopped the import, something that I missed in my cleaning.
+
+# SELECT * 
+# FROM generalesportdata; TEMPORARY TABLE
+
+# Re-importing the data with the few games that were missing due to this, going to name the table TotalEarnings as it was previously. Query should function properly.
+# The more you know, I suppose, glad I caught this before I went deeper.
+
+# DATA CLEANING FIX END
+##############################
+
+# Total Earnings / Tournament - Battle Royale
+
+SELECT Game, TotalEarnings, TotalTournaments, ROUND(SUM(TotalEarnings)/SUM(TotalTournaments),2) AS 'Earnings per Tournament'
+FROM TotalEarnings
+WHERE Genre = 'Battle Royale'
+AND TotalTournaments >= 15
+AND TotalEarnings >= 15000
+GROUP BY Game
+ORDER BY SUM(TotalEarnings)/SUM(TotalTournaments) DESC;
+
+# PUBG and PUBG Mobile had 2 of the highest earnings per tournament, re-integrating the proper data is highly beneficial. I will have to take a closer look at import restrictions in the future.
+
+# Total Earnings / Player - Segmented by Game - Third Person Shooter
+
+SELECT Game, TotalEarnings, TotalPlayers, ROUND(SUM(TotalEarnings)/SUM(TotalPlayers),2) AS 'Earnings per Player'
+FROM TotalEarnings
+WHERE Genre = 'Third-Person Shooter'
+AND TotalTournaments >= 15
+AND TotalEarnings >= 15000
+GROUP BY Game
+ORDER BY SUM(TotalEarnings)/SUM(TotalPlayers) DESC;
+
+# Total Earnings / Tournament - Third Person Shooter
+
+SELECT Game, TotalEarnings, TotalTournaments, ROUND(SUM(TotalEarnings)/SUM(TotalTournaments),2) AS 'Earnings per Tournament'
+FROM TotalEarnings
+WHERE Genre = 'Third-Person Shooter'
+AND TotalTournaments >= 15
+AND TotalEarnings >= 15000
+GROUP BY Game
+ORDER BY SUM(TotalEarnings)/SUM(TotalTournaments) DESC;
