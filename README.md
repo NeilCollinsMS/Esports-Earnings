@@ -10,3 +10,5 @@ Note: This data source is pulled from the same site that I used for reference in
 Unlike some of my earlier SQL projects where I was simply providing demonstrations of queries, I will attempt to provide more analysis and thoughts on each of the queries I write. I may also import this data into R for more statistical analysis.
 
 Final insights will be compiled into a Tableau Workbook & a Powerpoint Presentation.
+
+Note: My queries and comments are meant to demonstrate my thought process during data exploration, and does not necessarily show the level of polish that would be submitted for a final project.
