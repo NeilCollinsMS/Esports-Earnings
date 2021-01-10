@@ -206,6 +206,9 @@ AND TotalEarnings >= 15000
 GROUP BY Game
 ORDER BY SUM(TotalEarnings)/SUM(TotalPlayers) DESC;
 
+# The profitable TPS games are completely made up of Gear of War games. If we were to do statistical analysis, we might be tempted to overlook this genre because 
+# there are so few TPS games; meaning that Gears of War might be the reason for high earnings/player, rather than the TPS genre as a whole. 
+
 # Total Earnings / Tournament - Third Person Shooter
 
 SELECT Game, TotalEarnings, TotalTournaments, ROUND(SUM(TotalEarnings)/SUM(TotalTournaments),2) AS 'Earnings per Tournament'
@@ -215,3 +218,11 @@ AND TotalTournaments >= 15
 AND TotalEarnings >= 15000
 GROUP BY Game
 ORDER BY SUM(TotalEarnings)/SUM(TotalTournaments) DESC;
+
+# Really not much to analyze with so few games; though GOW4 and GOW5 are far more profitable than the original. It's interesting that GOW2 and GOW3 didn't have larger tournament scenes.
+
+SELECT *
+FROM TotalEarnings
+WHERE Genre = 'Third-Person Shooter';
+
+# As noted before, Gears of War: Ultimate Edition, Gears of War 2, Gears of War 3, and The Division 2 all failed the Tournament count and earnings metrics, though tournaments existed.
